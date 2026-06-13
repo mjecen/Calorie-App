@@ -30,7 +30,6 @@ const STORAGE_KEY = "calorie-tracker-state-v1";
 const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
 
 const emptyMealForm = {
-  name: "",
   description: "",
   calories: "",
   protein: "",
@@ -305,8 +304,7 @@ function AddMealPage({ editingMeal, onCancelEdit, onSaveMeal }) {
     setForm(
       editingMeal
         ? {
-            name: editingMeal.name,
-            description: editingMeal.description || "",
+            description: editingMeal.description || editingMeal.name || "",
             calories: String(editingMeal.calories),
             protein: String(editingMeal.protein),
             type: editingMeal.type,
@@ -363,8 +361,8 @@ function AddMealPage({ editingMeal, onCancelEdit, onSaveMeal }) {
 
       setForm((current) => ({
         ...current,
-        name: estimate.mealName || current.name,
-        description: estimate.description || current.description,
+        description:
+          estimate.description || estimate.mealName || current.description,
         calories: String(estimate.estimatedCalories ?? current.calories),
         protein: String(estimate.estimatedProtein ?? current.protein)
       }));
@@ -386,14 +384,14 @@ function AddMealPage({ editingMeal, onCancelEdit, onSaveMeal }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    const cleanName = form.name.trim();
-    if (!cleanName) return;
+    const cleanDescription = form.description.trim();
+    const mealLabel = cleanDescription || `${form.type} meal`;
 
     onSaveMeal({
       id: editingMeal?.id || `meal-${Date.now()}`,
       date: editingMeal?.date || getTodayKey(),
-      name: cleanName,
-      description: form.description.trim(),
+      name: mealLabel,
+      description: cleanDescription,
       type: form.type,
       calories: Math.max(Number(form.calories || 0), 0),
       protein: Math.max(Number(form.protein || 0), 0),
@@ -412,16 +410,6 @@ function AddMealPage({ editingMeal, onCancelEdit, onSaveMeal }) {
       <div className="space-y-4 px-5 py-5">
         <Card className="p-5">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <label className="block">
-              <span className="text-sm font-bold">Meal name</span>
-              <input
-                className="mt-2 h-12 w-full rounded-xl border border-line bg-white px-4 text-base outline-none focus:border-calorie"
-                value={form.name}
-                onChange={(event) => updateField("name", event.target.value)}
-                placeholder="Meal name"
-              />
-            </label>
-
             <label className="block">
               <span className="text-sm font-bold">Description</span>
               <textarea

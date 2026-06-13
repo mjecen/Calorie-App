@@ -22,7 +22,7 @@ export function MealItem({ meal, onDelete, onEdit }) {
         <h3 className="mt-1 text-[15px] font-bold leading-snug text-ink">
           {meal.name}
         </h3>
-        {meal.description ? (
+        {meal.description && meal.description !== meal.name ? (
           <p className="mt-1 line-clamp-2 text-xs leading-snug text-muted">
             {meal.description}
           </p>
